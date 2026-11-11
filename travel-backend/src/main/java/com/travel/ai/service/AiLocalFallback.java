@@ -112,7 +112,9 @@ public class AiLocalFallback {
     public AiChatResponse chat(String message, AiContextService.ChatContext context,
                                String model, long latencyMs) {
         StringBuilder reply = new StringBuilder();
-        reply.append("AI 服务当前不可用，我先给出平台内的检索结果（本地兜底，不是大模型回答）：\n");
+        String shortQuestion = message == null ? "" : (message.length() > 30 ? message.substring(0, 30) + "…" : message);
+        reply.append("关于「").append(shortQuestion)
+                .append("」，AI 服务当前不可用，我先给出平台内的检索结果（本地兜底，不是大模型回答）：\n");
         if (context.references().isEmpty()) {
             reply.append("暂时没有检索到相关产品，请换个目的地或关键词试试。");
         } else {
