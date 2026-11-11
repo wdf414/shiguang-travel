@@ -182,6 +182,26 @@ flowchart TB
 
 ## 六、快速开始
 
+### 6.0 Windows 一键启动（推荐）
+
+在项目根目录双击：
+
+```text
+启动网页.bat
+```
+
+脚本会自动：
+
+1. 检查 `travel-backend\.env`，首次运行会生成模板并打开记事本；
+2. 检查 MySQL 服务与 `lvyou` 数据库，数据库不存在时询问是否导入；
+3. 启动后端和前端两个独立窗口；
+4. 等待服务就绪后自动打开 `http://localhost:3000`。
+
+首次使用前，请在打开的 `.env` 中填写 `DB_PASSWORD`、`JWT_SECRET`、`AI_API_KEY`，保存后重新双击即可。后端/前端窗口请保持打开；关闭启动窗口不会停止服务。
+
+> 如果双击没有反应，右键 `启动网页.bat` →「以管理员身份运行」，或在 PowerShell 中执行：
+> `powershell -ExecutionPolicy Bypass -File scripts\start-demo.ps1`
+
 ### 6.1 环境要求
 
 - JDK 17+
