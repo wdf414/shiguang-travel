@@ -12,7 +12,7 @@
 target/
 *.class
 *.jar
-!.mvn/wrapper/maven-wrapper.jar
+!**/.mvn/wrapper/maven-wrapper.jar
 hs_err_pid*
 replay_pid*
 .mvn/timing.properties
