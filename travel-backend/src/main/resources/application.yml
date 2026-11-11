@@ -1,0 +1,72 @@
+server:
+  port: ${SERVER_PORT:8080}
+  tomcat:
+    max-http-post-size: 50MB
+    max-swallow-size: 50MB
+
+spring:
+  application:
+    name: shiguang-travel
+  # 本地开发时可把敏感配置放在 travel-backend/.env，模板见 .env.example。
+  # 该文件已被 .gitignore 忽略，不会进入公开仓库。
+  config:
+    import: optional:file:./.env[.properties]
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/lvyou?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: ${MYBATIS_LOG_IMPL:org.apache.ibatis.logging.slf4j.Slf4jImpl}
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+jwt:
+  # 生产环境必须配置至少 32 字节的随机字符串；未配置时启动会生成临时密钥并打印警告。
+  secret: ${JWT_SECRET:}
+  expiration: ${JWT_EXPIRATION:86400000}  # 24 小时
+
+app:
+  # 管理员注册密钥。留空表示关闭“管理员自助注册”，管理员账号由数据库/运维创建。
+  admin-register-key: ${ADMIN_REGISTER_KEY:}
+  cors-allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173}
+  # 演示数据初始化（建表补列、种子账号）。生产环境请设为 false。
+  demo-data-enabled: ${DEMO_DATA_ENABLED:true}
+
+ai:
+  enabled: ${AI_ENABLED:true}
+  # DeepSeek 的 OpenAI 兼容地址；也可切换到通义千问等兼容服务。
+  base-url: ${AI_BASE_URL:https://api.deepseek.com}
+  api-key: ${AI_API_KEY:}
+  model: ${AI_MODEL:deepseek-chat}
+  temperature: ${AI_TEMPERATURE:0.7}
+  max-tokens: ${AI_MAX_TOKENS:2000}
+  timeout-seconds: ${AI_TIMEOUT_SECONDS:60}
+  # 未配置 Key 时是否允许使用本地兜底结果。正式演示请保持 false。
+  mock-enabled: ${AI_MOCK_ENABLED:false}
+  cache-ttl-seconds: ${AI_CACHE_TTL_SECONDS:600}
+  rate-limit-per-minute: ${AI_RATE_LIMIT_PER_MINUTE:20}
+
+logging:
+  level:
+    com.travel: ${LOG_LEVEL:info}
