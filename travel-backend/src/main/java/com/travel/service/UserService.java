@@ -114,6 +114,11 @@ public class UserService {
         userMapper.insert(user);
     }
 
+    /** 按主键查询用户，供审核记录等场景读取昵称。 */
+    public User getById(Long userId) {
+        return userMapper.selectById(userId);
+    }
+
     public Map<String, Object> getUserInfo(Long userId) {
         User user = userMapper.selectById(userId);
         if (user == null) {

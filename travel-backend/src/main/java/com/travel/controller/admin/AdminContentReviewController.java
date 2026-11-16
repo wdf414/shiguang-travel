@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.travel.common.Result;
 import com.travel.entity.*;
+import com.travel.security.LoginUser;
 import com.travel.service.*;
 import com.travel.vo.ContentReviewVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -85,12 +87,13 @@ public class AdminContentReviewController {
      * 审核内容
      */
     @PostMapping("/audit")
-    public Result<?> auditContent(@RequestBody ContentReviewVO reviewVO) {
+    public Result<?> auditContent(@AuthenticationPrincipal LoginUser loginUser,
+                                  @RequestBody ContentReviewVO reviewVO) {
         try {
-            // 获取当前登录管理员信息（这里简化处理，实际应从SecurityContext获取）
-            Long reviewerId = 1L; // TODO: 从登录信息获取
-            String reviewerName = "管理员"; // TODO: 从登录信息获取
-            
+            // 审核记录归属当前登录管理员，便于后续追溯
+            Long reviewerId = loginUser != null ? loginUser.getUserId() : null;
+            String reviewerName = resolveReviewerName(reviewerId);
+
             contentReviewService.manualReview(
                 reviewVO.getContentType(),
                 reviewVO.getContentId(),
@@ -99,7 +102,7 @@ public class AdminContentReviewController {
                 reviewerId,
                 reviewerName
             );
-            
+
             return Result.success("审核完成");
         } catch (Exception e) {
             log.error("审核失败", e);
@@ -107,15 +110,28 @@ public class AdminContentReviewController {
         }
     }
 
+    /** 优先使用管理员昵称，查不到时回退为“管理员”。 */
+    private String resolveReviewerName(Long reviewerId) {
+        if (reviewerId == null) {
+            return "管理员";
+        }
+        User reviewer = userService.getById(reviewerId);
+        if (reviewer == null || reviewer.getNickname() == null || reviewer.getNickname().isBlank()) {
+            return "管理员";
+        }
+        return reviewer.getNickname();
+    }
+
     /**
      * 批量审核
      */
     @PostMapping("/batch-audit")
-    public Result<?> batchAudit(@RequestBody ContentReviewVO batchVO) {
+    public Result<?> batchAudit(@AuthenticationPrincipal LoginUser loginUser,
+                                @RequestBody ContentReviewVO batchVO) {
         try {
-            Long reviewerId = 1L;
-            String reviewerName = "管理员";
-            
+            Long reviewerId = loginUser != null ? loginUser.getUserId() : null;
+            String reviewerName = resolveReviewerName(reviewerId);
+
             for (Long contentId : batchVO.getContentIds()) {
                 contentReviewService.manualReview(
                     batchVO.getContentType(),
