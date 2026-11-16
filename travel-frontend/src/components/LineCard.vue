@@ -1,7 +1,7 @@
 <template>
   <el-card class="line-card" shadow="hover" @click="goDetail">
     <div class="card-image">
-      <img :src="line.coverImage" :alt="line.title" @error="onImgError" />
+      <img :src="resolveImage(line.coverImage, 'line-' + line.id)" :alt="line.title" @error="onImgError" />
       <span class="days-tag">{{ line.days }}天{{ line.days - 1 }}晚</span>
     </div>
     <div class="card-content">
@@ -20,13 +20,17 @@
           <span>已售{{ line.sales }}</span>
         </div>
       </div>
+      <div class="detail-hint">
+        查看详情
+        <el-icon><ArrowRight /></el-icon>
+      </div>
     </div>
   </el-card>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
-const fallbackImg = 'https://picsum.photos/400/300?random=999'
+import { resolveImage, onImageError as onImgError } from '@/utils/image'
 
 const props = defineProps({
   line: { type: Object, required: true }
@@ -36,11 +40,6 @@ const router = useRouter()
 
 function goDetail() {
   router.push(`/line/${props.line.id}`)
-}
-
-function onImgError(e) {
-  e.target.src = fallbackImg
-  e.target.onerror = null
 }
 </script>
 
@@ -98,5 +97,17 @@ function onImgError(e) {
   font-size: 12px;
   color: #999;
   span { display: flex; align-items: center; gap: 2px; }
+}
+.detail-hint {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed #eee;
+  color: #0086f6;
+  font-size: 13px;
+  font-weight: 500;
 }
 </style>

@@ -58,7 +58,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
             hotel.setRating(grade.getRating() != null ? grade.getRating() : new BigDecimal("4.5"));
             hotel.setStar(4); // 默认4星
             hotel.setPriceStart(new BigDecimal("199")); // 默认起步价
-            hotel.setCoverImage(grade.getCoverImage() != null ? grade.getCoverImage() : "https://picsum.photos/800/600?random=" + id);
+            hotel.setCoverImage(grade.getCoverImage() != null ? grade.getCoverImage() : "/api/photos/pick?seed=hotel-" + id);
             hotel.setDescription(grade.getName() + "坐落于" + grade.getCity() + grade.getArea() + "，地理位置优越，环境优雅，是您出行的理想选择。");
             hotel.setStatus(1);
             return hotel;
@@ -87,7 +87,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
             r1.setBreakfast("含单早");
             r1.setPeople(2);
             r1.setStock(10);
-            r1.setImage("https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=400&h=300&fit=crop");
+            r1.setImage("/api/photos/pick?seed=room-big-bed");
             rooms.add(r1);
 
             HotelRoom r2 = new HotelRoom();
@@ -99,7 +99,7 @@ public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements
             r2.setBreakfast("含双早");
             r2.setPeople(2);
             r2.setStock(5);
-            r2.setImage("https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400&h=300&fit=crop");
+            r2.setImage("/api/photos/pick?seed=room-twin");
             rooms.add(r2);
         }
         

@@ -35,7 +35,7 @@
         @click="goDetail(note.id)"
       >
         <div class="cover-wrapper">
-          <img :src="note.coverImage || 'https://picsum.photos/400/300'" :alt="note.title" class="cover-img" @error="onImgError">
+          <img :src="resolveImage(note.coverImage, 'note-' + note.id)" :alt="note.title" class="cover-img" @error="onImgError">
           <div class="location" v-if="note.destination">
             <el-icon><Location /></el-icon> {{ note.destination }}
           </div>
@@ -75,6 +75,7 @@ import { Edit, Search, Location, View, Star } from '@element-plus/icons-vue'
 import { getNoteList } from '@/api/travel-note'
 import { useUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
+import { resolveImage, onImageError as onImgError } from '@/utils/image'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -137,11 +138,6 @@ onMounted(() => {
   fetchNotes()
 })
 
-const fallbackImg = 'https://picsum.photos/400/300?random=1000'
-function onImgError(e) {
-  e.target.src = fallbackImg
-  e.target.onerror = null
-}
 </script>
 
 <style lang="scss" scoped>

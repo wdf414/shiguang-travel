@@ -94,6 +94,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import LineCard from '@/components/LineCard.vue'
 import { getLineList } from '@/api/line'
+import { localPhoto } from '@/utils/image'
 
 const route = useRoute()
 const loading = ref(false)
@@ -172,7 +173,7 @@ async function handleSearch() {
     lineList.value = Array.from({ length: 12 }, (_, i) => ({
       id: i + 1,
       title: `${destinationOptions[i % 8]}精品${[3,4,5,6,7][i % 5]}日游`,
-      coverImage: `https://picsum.photos/400/300?random=${i + 50}`,
+      coverImage: localPhoto(`search-${i}`),
       destination: destinationOptions[i % 8],
       departureCity: cityOptions[i % 6],
       days: [3,4,5,6,7][i % 5],

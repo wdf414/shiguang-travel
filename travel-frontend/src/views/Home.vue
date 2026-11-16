@@ -2,7 +2,7 @@
   <div class="home-page">
     <!-- 轮播图 -->
     <section class="banner-section">
-      <el-carousel height="450px" :interval="5000" arrow="always">
+      <el-carousel height="450px" :interval="5000" :autoplay="true" :pause-on-hover="false" arrow="always">
         <el-carousel-item v-for="item in banners" :key="item.id">
           <div class="banner-item" :style="{ backgroundImage: `url(${item.image})` }">
             <div class="banner-content">
@@ -82,7 +82,7 @@
             @click="goToActivity(activity)"
           >
             <div class="activity-cover">
-              <img :src="activity.coverImage || 'https://picsum.photos/400/200'" @error="onImgError" />
+              <img :src="resolveImage(activity.coverImage, 'activity-' + activity.id)" @error="onImgError" />
               <div class="activity-badge">进行中</div>
               <div v-if="activity.studentOnly === 1" class="student-badge">🎓 学生专属</div>
             </div>
@@ -149,7 +149,7 @@
             @click="router.push(`/travel-notes/${note.id}`)"
           >
             <div class="cover">
-              <img :src="note.coverImage || 'https://picsum.photos/400/300'" @error="onImgError" />
+              <img :src="resolveImage(note.coverImage, 'note-' + note.id)" @error="onImgError" />
               <div class="views"><el-icon><View /></el-icon> {{ note.views }}</div>
             </div>
             <div class="info">
@@ -232,6 +232,7 @@ import { Calendar, School, Sunny, Ship, ArrowRight, View, Clock } from '@element
 import LineCard from '@/components/LineCard.vue'
 import { getLineList, getDestinations } from '@/api/line'
 import { getActivityList } from '@/api/activity'
+import { localPhoto, resolveImage, onImageError as onImgError } from '@/utils/image'
 
 const router = useRouter()
 const loading = ref(false)
@@ -244,8 +245,8 @@ const activityList = ref([]) // 活动列表
 
 // 轮播图配置
 const banners = ref([
-  { id: 1, image: 'https://picsum.photos/1920/450?random=1', title: '探索未知的世界', subtitle: '专为学生打造的旅游平台', keyword: '毕业季' },
-  { id: 2, image: 'https://picsum.photos/1920/450?random=2', title: '趁年轻，去旅行', subtitle: '定制化行程，低价高质', keyword: '周边游' }
+  { id: 1, image: localPhoto('banner-1', '桂林'), title: '探索未知的世界', subtitle: '专为学生打造的旅游平台', keyword: '毕业季' },
+  { id: 2, image: localPhoto('banner-2', '黄山'), title: '趁年轻，去旅行', subtitle: '定制化行程，低价高质', keyword: '周边游' }
 ])
 
 // 分类导航
@@ -258,12 +259,12 @@ const categories = [
 
 // 热门目的地数据 (静态+动态)
 const destinations = ref([
-  { name: '三亚', image: 'https://picsum.photos/200/160?random=11' },
-  { name: '大理', image: 'https://picsum.photos/200/160?random=12' },
-  { name: '成都', image: 'https://picsum.photos/200/160?random=13' },
-  { name: '西藏', image: 'https://picsum.photos/200/160?random=14' },
-  { name: '新疆', image: 'https://picsum.photos/200/160?random=15' },
-  { name: '北京', image: 'https://picsum.photos/200/160?random=16' }
+  { name: '三亚', image: localPhoto('dest-sanya', '三亚') },
+  { name: '大理', image: localPhoto('dest-dali', '大理') },
+  { name: '成都', image: localPhoto('dest-chengdu', '成都') },
+  { name: '西藏', image: localPhoto('dest-tibet', '布达拉宫') },
+  { name: '新疆', image: localPhoto('dest-xinjiang', '胡杨') },
+  { name: '北京', image: localPhoto('dest-beijing', '北京') }
 ])
 
 // 筛选逻辑
@@ -285,11 +286,11 @@ const guideBg = ref('')
 let bgTimer = null
 
 const bgImages = [
-  'https://picsum.photos/800/600?random=21',
-  'https://picsum.photos/800/600?random=22',
-  'https://picsum.photos/800/600?random=23',
-  'https://picsum.photos/800/600?random=24',
-  'https://picsum.photos/800/600?random=25'
+  localPhoto('companion-1', '古城'),
+  localPhoto('companion-2', '洱海'),
+  localPhoto('companion-3', '草原'),
+  localPhoto('companion-4', '古镇'),
+  localPhoto('companion-5', '山水')
 ]
 
 function rotateCardsBackground() {
@@ -427,11 +428,6 @@ onBeforeUnmount(() => {
   if (bgTimer) window.clearInterval(bgTimer)
 })
 
-const fallbackImg = 'https://picsum.photos/400/300?random=888'
-function onImgError(e) {
-  e.target.src = fallbackImg
-  e.target.onerror = null
-}
 </script>
 
 <style lang="scss" scoped>
@@ -485,6 +481,7 @@ $bg-color: #f5f5f5;
   
   .banner-item {
     height: 100%;
+    background-color: #dbe4ef;
     background-size: cover;
     background-position: center;
     position: relative;

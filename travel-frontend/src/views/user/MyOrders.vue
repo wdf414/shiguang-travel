@@ -18,7 +18,7 @@
           <el-tag :type="statusMap[order.status].type">{{ statusMap[order.status].text }}</el-tag>
         </div>
         <div class="order-body">
-          <img :src="order.lineCover" class="line-cover" @error="onImgError" />
+          <img :src="resolveImage(order.lineCover, 'order-' + order.id)" class="line-cover" @error="onImgError" />
           <div class="order-info">
             <h4>{{ order.lineName }}</h4>
             <p>出发日期：{{ order.departureDate }}</p>
@@ -62,6 +62,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getOrderList, cancelOrder } from '@/api/order'
+import { resolveImage, localPhoto, FALLBACK_IMAGE } from '@/utils/image'
 
 const router = useRouter()
 const loading = ref(false)
@@ -97,7 +98,7 @@ async function fetchOrders() {
       {
         orderNo: 'T1705123456789',
         lineName: '云南大理丽江双飞6日游',
-        lineCover: 'https://picsum.photos/150/100?random=200',
+        lineCover: localPhoto('order-200'),
         departureDate: '2026-02-15',
         travelerCount: 2,
         totalPrice: 5998,
@@ -107,7 +108,7 @@ async function fetchOrders() {
       {
         orderNo: 'T1705123456788',
         lineName: '海南三亚5日游',
-        lineCover: 'https://picsum.photos/150/100?random=201',
+        lineCover: localPhoto('order-201'),
         departureDate: '2026-01-20',
         travelerCount: 1,
         totalPrice: 3599,
@@ -149,7 +150,7 @@ async function handleCancel(orderNo) {
 
 onMounted(fetchOrders)
 
-const fallbackImg = 'https://picsum.photos/150/100?random=333'
+const fallbackImg = FALLBACK_IMAGE
 function onImgError(e) {
   e.target.src = fallbackImg
   e.target.onerror = null

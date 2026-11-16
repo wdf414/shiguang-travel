@@ -133,6 +133,7 @@ import { getGuideDetail as apiGetGuideDetail, likeGuide as apiLikeGuide } from '
 import { getReviewList } from '@/api/review'
 import { useUserStore } from '@/stores/user'
 import ReviewDialog from '@/components/ReviewDialog.vue'
+import { FALLBACK_IMAGE } from '@/utils/image'
 
 const route = useRoute()
 const router = useRouter()
@@ -144,7 +145,7 @@ const guide = ref(null)
 const reviews = ref([])
 const onlyStudent = ref(false)
 const reviewDialogVisible = ref(false)
-const fallbackImg = 'https://picsum.photos/800/400?random=88'
+const fallbackImg = FALLBACK_IMAGE
 
 onMounted(() => {
   fetchDetail()

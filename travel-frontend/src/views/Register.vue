@@ -48,6 +48,7 @@ import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
+import { localPhoto } from '@/utils/image'
 
 const router = useRouter()
 const route = useRoute()
@@ -76,7 +77,7 @@ const isAdminRegister = ref(false)
 function nextBackgroundUrl() {
   bgSeed += 1
   const seed = `${Date.now()}-${bgSeed}`
-  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/1920/1080`
+  return localPhoto(seed)
 }
 
 function loadImage(url) {

@@ -53,6 +53,7 @@ import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Location } from '@element-plus/icons-vue'
 import { searchScenicSpots, addRouteSpot } from '@/api/user'
+import { FALLBACK_IMAGE } from '@/utils/image'
 
 const route = useRoute()
 const keyword = ref(route.query.keyword || '')
@@ -66,7 +67,7 @@ const pagination = reactive({
   total: 0
 })
 
-const fallbackImg = 'https://picsum.photos/180/120?random=666'
+const fallbackImg = FALLBACK_IMAGE
 function onImgError(e) {
   e.target.src = fallbackImg
   e.target.onerror = null

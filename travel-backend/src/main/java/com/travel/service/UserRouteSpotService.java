@@ -90,7 +90,7 @@ public class UserRouteSpotService {
                 String cover = s.getCoverImage();
                 if (cover == null || cover.isEmpty()) {
                     long seed = s.getId() != null ? s.getId() : s.getName().hashCode();
-                    cover = "https://picsum.photos/seed/scenic-" + Math.abs(seed) + "/400/300";
+                    cover = "/api/photos/pick?seed=scenic-" + Math.abs(seed);
                 }
                 map.put("coverImage", cover);
             }

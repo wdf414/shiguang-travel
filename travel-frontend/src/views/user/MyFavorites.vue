@@ -4,7 +4,7 @@
     
     <div class="favorite-list" v-loading="loading">
       <div v-for="item in favoriteList" :key="item.id" class="favorite-item">
-        <img :src="item.coverImage" class="cover" @click="goDetail(item.lineId)" @error="onImgError" />
+        <img :src="resolveImage(item.coverImage, 'favorite-' + item.lineId)" class="cover" @click="goDetail(item.lineId)" @error="onImgError" />
         <div class="info">
           <h4 @click="goDetail(item.lineId)">{{ item.title }}</h4>
           <p><el-icon><Location /></el-icon>{{ item.destination }} | {{ item.days }}天</p>
@@ -34,6 +34,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getFavoriteList, unfavoriteLine } from '@/api/line'
+import { resolveImage, localPhoto, FALLBACK_IMAGE } from '@/utils/image'
 
 const router = useRouter()
 const loading = ref(false)
@@ -53,8 +54,8 @@ async function fetchFavorites() {
     pagination.total = data.total
   } catch {
     favoriteList.value = [
-      { id: 1, lineId: 1, title: '云南大理丽江双飞6日游', coverImage: 'https://picsum.photos/200/150?random=300', destination: '云南', days: 6, price: 2999 },
-      { id: 2, lineId: 2, title: '海南三亚5日游', coverImage: 'https://picsum.photos/200/150?random=301', destination: '海南', days: 5, price: 3599 }
+      { id: 1, lineId: 1, title: '云南大理丽江双飞6日游', coverImage: localPhoto('favorite-1'), destination: '云南', days: 6, price: 2999 },
+      { id: 2, lineId: 2, title: '海南三亚5日游', coverImage: localPhoto('favorite-2'), destination: '海南', days: 5, price: 3599 }
     ]
     pagination.total = 2
   } finally {
@@ -78,7 +79,7 @@ async function handleUnfavorite(lineId) {
 
 onMounted(fetchFavorites)
 
-const fallbackImg = 'https://picsum.photos/200/130?random=444'
+const fallbackImg = FALLBACK_IMAGE
 function onImgError(e) {
   e.target.src = fallbackImg
   e.target.onerror = null

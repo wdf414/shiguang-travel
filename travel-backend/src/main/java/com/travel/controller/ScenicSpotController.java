@@ -4,7 +4,6 @@ import java.net.URI;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.travel.common.PageResult;
+import com.travel.common.PhotoStorage;
 import com.travel.common.Result;
 import com.travel.service.ScenicSpotService;
 
@@ -39,7 +39,7 @@ public class ScenicSpotController {
     @GetMapping("/photo")
     public ResponseEntity<?> getPhoto(@RequestParam("name") String name) {
         try {
-            Path dir = Paths.get("../scenic_photos").toAbsolutePath().normalize();
+            Path dir = PhotoStorage.directory();
             if (!Files.isDirectory(dir)) {
                 return fallback();
             }
@@ -71,8 +71,9 @@ public class ScenicSpotController {
     }
 
     private ResponseEntity<?> fallback() {
+        // 兜底使用本地景点照片，避免依赖境外图床
         return ResponseEntity.status(302)
-                .location(URI.create("https://picsum.photos/seed/scenic-default/400/300"))
+                .location(URI.create("/api/photos/pick?seed=scenic-default"))
                 .build();
     }
 }

@@ -3,7 +3,7 @@
     <template v-if="note">
       <!-- 头部封面区域 -->
       <div class="note-header">
-        <div class="cover-image" :style="{ backgroundImage: `url(${note.coverImage})` }">
+        <div class="cover-image" :style="{ backgroundImage: `url(${resolveImage(note.coverImage, 'note-cover-' + note.id)})` }">
           <div class="title-wrapper">
             <h1 class="title">{{ note.title }}</h1>
             <div class="meta-info">
@@ -108,6 +108,7 @@ import { Location, View, Star, Pointer, ChatDotRound, Plus } from '@element-plus
 import { getNoteDetail, getNoteComments, addComment } from '@/api/travel-note'
 import { useUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
+import { resolveImage } from '@/utils/image'
 
 const route = useRoute()
 const userStore = useUserStore()

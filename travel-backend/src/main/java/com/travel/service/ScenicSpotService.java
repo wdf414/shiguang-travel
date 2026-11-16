@@ -61,7 +61,7 @@ public class ScenicSpotService {
         }
         if (!StringUtils.hasText(cover)) {
             long seed = spot.getId() != null ? spot.getId() : (spot.getName() != null ? spot.getName().hashCode() : 1);
-            cover = "https://picsum.photos/seed/scenic-" + Math.abs(seed) + "/400/300";
+            cover = "/api/photos/pick?seed=scenic-" + Math.abs(seed);
         }
         map.put("coverImage", cover);
         return map;

@@ -246,7 +246,7 @@ public class AiContextService {
         hotel.setTags(grade.getArea());
         hotel.setCoverImage(StringUtils.hasText(grade.getCoverImage())
                 ? grade.getCoverImage()
-                : "https://picsum.photos/seed/hotel-" + grade.getId() + "/800/600");
+                : "/api/photos/pick?seed=hotel-" + grade.getId());
         hotel.setStatus(1);
         return hotel;
     }

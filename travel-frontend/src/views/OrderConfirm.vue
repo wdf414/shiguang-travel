@@ -4,7 +4,7 @@
     
     <el-card class="line-info">
       <div class="line-summary">
-        <img :src="line.coverImage" class="cover" @error="onImgError" />
+        <img :src="resolveImage(line.coverImage, 'order-line-' + line.id)" class="cover" @error="onImgError" />
         <div class="info">
           <h3>{{ line.title }}</h3>
           <p>出发日期：{{ orderForm.departureDate }}</p>
@@ -145,6 +145,7 @@ import { validatePhone, validateIdCard } from '@/utils'
 
 import { getMyCoupons } from '@/api/coupon'
 import { ArrowRight } from '@element-plus/icons-vue'
+import { resolveImage, localPhoto, FALLBACK_IMAGE } from '@/utils/image'
 
 const route = useRoute()
 const router = useRouter()
@@ -205,9 +206,8 @@ async function fetchMyCoupons() {
   }
 }
 
-const fallbackImg = 'https://picsum.photos/200/150?random=555'
 function onImgError(e) {
-  e.target.src = fallbackImg
+  e.target.src = FALLBACK_IMAGE
   e.target.onerror = null
 }
 
@@ -281,7 +281,7 @@ async function fetchLine() {
     line.value = {
       id: route.params.lineId,
       title: '云南大理丽江双飞6日游',
-      coverImage: 'https://picsum.photos/200/150?random=100',
+      coverImage: localPhoto('order-line-fallback'),
       departureCity: '上海',
       price: 2999
     }

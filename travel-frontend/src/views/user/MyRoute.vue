@@ -41,6 +41,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Location } from '@element-plus/icons-vue'
 import { getRouteSpots, deleteRouteSpot } from '@/api/user'
+import { FALLBACK_IMAGE } from '@/utils/image'
 
 const loading = ref(false)
 const routeList = ref([])
@@ -84,7 +85,7 @@ const handleRemove = async (id) => {
 
 onMounted(fetchRoute)
 
-const fallbackImg = 'https://picsum.photos/160/110?random=222'
+const fallbackImg = FALLBACK_IMAGE
 function onImgError(e) {
   e.target.src = fallbackImg
   e.target.onerror = null

@@ -84,6 +84,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { User, Setting } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
+import { localPhoto } from '@/utils/image'
 
 const router = useRouter()
 const route = useRoute()
@@ -126,7 +127,7 @@ function switchLoginType(type) {
 function nextBackgroundUrl() {
   bgSeed += 1
   const seed = `${Date.now()}-${bgSeed}`
-  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/1920/1080`
+  return localPhoto(seed)
 }
 
 function loadImage(url) {

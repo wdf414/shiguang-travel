@@ -287,7 +287,7 @@
                 class="product-card"
                 @click="goProduct(line)"
               >
-                <img :src="line.image || fallbackImg" :alt="line.name" @error="onImgError" />
+                <img :src="resolveImage(line.image, 'ai-line-' + line.id)" :alt="line.name" @error="onImgError" />
                 <div class="product-info">
                   <h4>{{ line.name }}</h4>
                   <p>{{ line.subtitle }}</p>
@@ -314,7 +314,7 @@
                 class="product-card"
                 @click="goProduct(hotel)"
               >
-                <img :src="hotel.image || fallbackImg" :alt="hotel.name" @error="onImgError" />
+                <img :src="resolveImage(hotel.image, 'ai-hotel-' + hotel.id)" :alt="hotel.name" @error="onImgError" />
                 <div class="product-info">
                   <h4>{{ hotel.name }}</h4>
                   <p>{{ hotel.subtitle }}</p>
@@ -337,10 +337,11 @@ import { computed, onMounted, onBeforeUnmount, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getAiHealth, planTrip } from '@/api/ai'
+import { resolveImage, FALLBACK_IMAGE } from '@/utils/image'
 
 const router = useRouter()
 const route = useRoute()
-const fallbackImg = 'https://picsum.photos/400/300?random=ai'
+const fallbackImg = FALLBACK_IMAGE
 
 const form = reactive({
   destination: '',

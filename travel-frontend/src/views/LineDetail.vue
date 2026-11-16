@@ -6,7 +6,7 @@
         <div class="image-gallery">
           <el-carousel height="400px">
             <el-carousel-item v-for="(img, idx) in line.images" :key="idx">
-              <img :src="img" class="gallery-img" @error="onImgError" />
+              <img :src="resolveImage(img, 'line-detail-' + route.params.id + '-' + idx)" class="gallery-img" @error="onImgError" />
             </el-carousel-item>
           </el-carousel>
         </div>
@@ -34,6 +34,9 @@
             <span><el-icon><Star /></el-icon>{{ line.rating }}分</span>
             <span>已售{{ line.sales }}人</span>
             <span>{{ line.reviewCount }}条评价</span>
+            <span v-if="line.stock !== null && line.stock !== undefined" class="stock-stat">
+              库存 {{ line.stock }} 人
+            </span>
           </div>
           
           <!-- 日期选择 -->
@@ -55,7 +58,7 @@
           <!-- 人数选择 -->
           <div class="people-select">
             <span class="label">出行人数</span>
-            <el-input-number v-model="peopleCount" :min="1" :max="selectedStock || 10" />
+            <el-input-number v-model="peopleCount" :min="1" :max="selectedStock !== null ? Math.max(selectedStock, 1) : 10" />
           </div>
 
           <div class="actions">
@@ -173,6 +176,7 @@ import { getReviewList } from '@/api/review'
 import { calculateStudentPrice } from '@/api/student'
 import { useUserStore } from '@/stores/user'
 import ReviewDialog from '@/components/ReviewDialog.vue'
+import { resolveImage, FALLBACK_IMAGE } from '@/utils/image'
 
 const route = useRoute()
 const router = useRouter()
@@ -189,10 +193,9 @@ const peopleCount = ref(1)
 const selectedPrice = ref(null)
 const selectedStock = ref(null)
 const studentPriceInfo = ref(null)
-const fallbackImg = 'https://picsum.photos/800/400?random=77'
 
 function onImgError(e) {
-  e.target.src = fallbackImg
+  e.target.src = FALLBACK_IMAGE
   e.target.onerror = null
 }
 
@@ -232,6 +235,8 @@ async function fetchDetail() {
       try { data.excludes = JSON.parse(data.excludes) } catch (e) { console.error('Parse excludes error', e) }
     }
     line.value = data
+    // 后端当前按线路维度维护库存，选中日期后暂时沿用该库存
+    selectedStock.value = data.stock !== null && data.stock !== undefined ? Number(data.stock) : null
   } catch (e) {
     console.error('Fetch detail error', e)
     // 模拟数据
@@ -247,6 +252,7 @@ async function fetchDetail() {
       departureCity: '上海',
       days: 6,
       price: 2999,
+      stock: 50,
       rating: 4.8,
       sales: 356,
       reviewCount: 128,
@@ -376,14 +382,22 @@ onMounted(() => {
   color: #666;
   margin-bottom: 20px;
   span { display: flex; align-items: center; gap: 4px; }
+  .stock-stat { color: #67c23a; font-weight: 500; }
 }
 .date-select, .people-select {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
   margin-bottom: 15px;
-  .label { color: #333; min-width: 70px; }
-  .stock { color: #999; em { color: #67c23a; font-style: normal; &.warning { color: #e6a23c; } } }
+  .label { color: #333; min-width: 70px; flex-shrink: 0; }
+  .stock {
+    color: #999;
+    white-space: nowrap;
+    em { color: #67c23a; font-style: normal; &.warning { color: #e6a23c; } }
+  }
+}
+.date-select :deep(.el-date-editor.el-input) {
+  width: 180px;
 }
 .actions {
   display: flex;
