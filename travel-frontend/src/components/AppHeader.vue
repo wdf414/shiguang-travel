@@ -17,6 +17,14 @@
           <el-icon><MagicStick /></el-icon>
           AI 行程
         </router-link>
+        <router-link
+          v-if="userStore.isLoggedIn && userStore.userInfo?.role === 'ADMIN'"
+          to="/admin"
+          class="admin-nav-link"
+        >
+          <el-icon><Setting /></el-icon>
+          管理后台
+        </router-link>
       </nav>
 
       <div class="header-right">
@@ -161,6 +169,18 @@ $border-color: #e5e5e5;
       &.router-link-active {
         color: #fff;
         background: linear-gradient(135deg, #667eea, #764ba2);
+      }
+    }
+
+    &.admin-nav-link {
+      margin-left: 4px;
+      color: #b88230;
+      background: rgba(230, 162, 60, 0.12);
+
+      &:hover,
+      &.router-link-active {
+        color: #fff;
+        background: #e6a23c;
       }
     }
   }

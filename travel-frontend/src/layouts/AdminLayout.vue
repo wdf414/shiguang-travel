@@ -82,6 +82,10 @@
           <el-breadcrumb-item v-if="breadcrumb">{{ breadcrumb }}</el-breadcrumb-item>
         </el-breadcrumb>
         <div class="header-right">
+          <router-link to="/" class="back-to-site">
+            <el-icon><Back /></el-icon>
+            返回前台
+          </router-link>
           <el-dropdown @command="handleCommand">
             <span class="admin-profile">
               <el-avatar :size="32" :src="userStore.userInfo?.avatar">
@@ -206,7 +210,21 @@ function handleCommand(command) {
   .header-right {
     display: flex;
     align-items: center;
-    
+    gap: 16px;
+
+    .back-to-site {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #409eff;
+      font-size: 14px;
+      text-decoration: none;
+
+      &:hover {
+        color: #66b1ff;
+      }
+    }
+
     .admin-profile {
       display: flex;
       align-items: center;

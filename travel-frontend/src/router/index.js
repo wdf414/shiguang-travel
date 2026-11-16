@@ -107,12 +107,7 @@ router.beforeEach((to, from, next) => {
     }
   }
 
-  // 如果已登录且是管理员，访问普通首页时跳转到管理后台
-  if (to.path === '/' && userStore.isLoggedIn && userStore.userInfo?.role === 'ADMIN') {
-    next('/admin')
-    return
-  }
-
+  // 管理员也可以浏览前台页面，后台入口由顶部导航提供，避免登录后“困”在后台找不到前台页面
   next()
 })
 

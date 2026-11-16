@@ -49,9 +49,13 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/user/login", "/api/user/register").permitAll()
                 .requestMatchers("/api/line/**").permitAll()
+                // 酒店列表、详情和房型是公开浏览内容；下单仍走 /api/hotel-orders（需登录）
+                .requestMatchers("/api/hotels", "/api/hotels/**").permitAll()
+                .requestMatchers("/api/hotel-grades", "/api/hotel-grades/**").permitAll()
                 .requestMatchers("/api/activity/**").permitAll()
                 .requestMatchers("/api/review/**").permitAll()
                 .requestMatchers("/api/scenic-spot/**").permitAll()
+                .requestMatchers("/api/photos/**").permitAll()
                 .requestMatchers("/api/travel-notes", "/api/travel-notes/*").permitAll()
                 .requestMatchers("/api/travel-note-comments").permitAll()
                 .requestMatchers("/api/companion/list", "/api/companion/*").permitAll()

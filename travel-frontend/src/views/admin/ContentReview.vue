@@ -73,9 +73,13 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="300" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" size="small" @click="handleView(row)">查看</el-button>
+            <el-button type="warning" size="small" @click="handleAiReview(row)">
+              <el-icon><MagicStick /></el-icon>
+              AI 复核
+            </el-button>
             <el-button type="success" size="small" @click="handleApprove(row)">通过</el-button>
             <el-button type="danger" size="small" @click="handleReject(row)">拒绝</el-button>
           </template>
@@ -254,7 +258,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Setting } from '@element-plus/icons-vue'
 import request from '@/utils/request'
@@ -346,6 +350,13 @@ function handleView(row) {
   checked.value = false
   sensitiveWords.value = []
   aiResult.value = null
+}
+
+// 列表页直接触发 AI 复核：打开详情弹窗并立即执行
+async function handleAiReview(row) {
+  handleView(row)
+  await nextTick()
+  await runAiReview()
 }
 
 // AI 语义初审

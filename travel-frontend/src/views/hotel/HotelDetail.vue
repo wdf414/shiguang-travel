@@ -29,17 +29,17 @@
       <div class="detail-content">
         <div class="gallery">
           <div class="main-img">
-            <img :src="hotel.coverImage" :alt="hotel.name" @error="onImgError">
+            <img :src="resolveImage(hotel.coverImage, 'hotel-' + hotel.id)" :alt="hotel.name" @error="onImgError">
           </div>
           <div class="sub-imgs">
             <template v-if="hotel.images && parseJSON(hotel.images).length">
               <div v-for="(img, idx) in parseJSON(hotel.images).slice(0, 3)" :key="idx" class="sub-item">
-                <img :src="img" @error="onImgError">
+                <img :src="resolveImage(img, 'hotel-' + hotel.id + '-sub-' + idx)" @error="onImgError">
               </div>
             </template>
             <template v-else>
               <div v-for="(img, idx) in [hotel.coverImage, hotel.coverImage, hotel.coverImage]" :key="idx" class="sub-item">
-                <img :src="img" @error="onImgError">
+                <img :src="resolveImage(img, 'hotel-' + hotel.id + '-sub-' + idx)" @error="onImgError">
               </div>
             </template>
           </div>
@@ -77,7 +77,7 @@
         <div class="room-list">
           <div v-for="room in rooms" :key="room.id" class="room-item">
             <div class="room-img">
-              <img :src="room.image || 'https://picsum.photos/200/150'" :alt="room.name" @error="onImgError">
+              <img :src="resolveImage(room.image, 'room-' + room.id)" :alt="room.name" @error="onImgError">
             </div>
             <div class="room-info">
               <h4>{{ room.name }}</h4>
@@ -173,21 +173,40 @@
     />
 
     <!-- 预订弹窗 -->
-    <el-dialog v-model="bookVisible" title="填写订单" width="500px">
-      <el-form :model="orderForm" label-width="80px">
+    <el-dialog v-model="bookVisible" title="填写订单" width="600px">
+      <el-form :model="orderForm" label-width="90px">
         <el-form-item label="房型信息">
           <div>{{ currentRoom?.name }}</div>
-          <div class="small-text">{{ dateRange?.[0] }} 至 {{ dateRange?.[1] }} (共{{ nightCount }}晚)</div>
+          <div class="small-text">{{ formatDate(dateRange?.[0]) }} 至 {{ formatDate(dateRange?.[1]) }} (共{{ nightCount }}晚)</div>
         </el-form-item>
         <el-form-item label="房间数量">
           <el-input-number v-model="orderForm.roomCount" :min="1" :max="3" />
         </el-form-item>
-        <el-form-item label="入住人">
-          <el-input v-model="orderForm.contactName" placeholder="填写入住人姓名" />
+        <el-form-item label="入住人数">
+          <el-input-number v-model="orderForm.guestCount" :min="1" :max="orderForm.roomCount * 3" />
         </el-form-item>
-        <el-form-item label="手机号">
-          <el-input v-model="orderForm.contactPhone" placeholder="接收确认短信" />
-        </el-form-item>
+
+        <div class="guests-container">
+          <div v-for="(guest, index) in orderForm.guests" :key="index" class="guest-item">
+            <div class="guest-header">入住人 {{ index + 1 }}</div>
+            <el-row :gutter="10">
+              <el-col :span="12">
+                <el-form-item label="姓名" label-width="50px" style="margin-bottom: 10px;">
+                  <el-input v-model="guest.name" placeholder="姓名" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="手机" label-width="50px" style="margin-bottom: 10px;">
+                  <el-input v-model="guest.phone" placeholder="手机号" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item label="身份证" label-width="64px" style="margin-bottom: 0;">
+              <el-input v-model="guest.idCard" placeholder="身份证号" />
+            </el-form-item>
+          </div>
+        </div>
+
         <div class="total-bar">
           总价：<span class="price">¥ {{ totalPrice }}</span>
         </div>
@@ -201,7 +220,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Location, StarFilled, Bicycle, Coffee, Connection } from '@element-plus/icons-vue'
 import { getHotelDetail, getHotelRooms, createHotelOrder } from '@/api/hotel'
@@ -210,6 +229,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import ReviewDialog from '@/components/ReviewDialog.vue'
 import dayjs from 'dayjs'
+import { resolveImage, FALLBACK_IMAGE } from '@/utils/image'
 
 const route = useRoute()
 const router = useRouter()
@@ -233,12 +253,23 @@ const dateRange = ref([today, tomorrow])
 
 const orderForm = reactive({
   roomCount: 1,
-  contactName: userStore.userInfo?.nickname || '',
-  contactPhone: userStore.userInfo?.phone || ''
+  guestCount: 1,
+  guests: []
 })
-const fallbackImg = 'https://picsum.photos/800/400?random=88'
+
+// 入住人数变化时动态增减入住人表单
+watch(() => orderForm.guestCount, (val) => {
+  const currentLen = orderForm.guests.length
+  if (val > currentLen) {
+    for (let i = 0; i < val - currentLen; i++) {
+      orderForm.guests.push({ name: '', phone: '', idCard: '' })
+    }
+  } else if (val < currentLen) {
+    orderForm.guests.splice(val)
+  }
+})
 function onImgError(e) {
-  e.target.src = fallbackImg
+  e.target.src = FALLBACK_IMAGE
   e.target.onerror = null
 }
 
@@ -246,6 +277,10 @@ function parseJSON(str) {
   if (!str) return []
   if (typeof str === 'object') return str
   try { return JSON.parse(str) } catch { return [] }
+}
+
+function formatDate(date) {
+  return date ? dayjs(date).format('YYYY-MM-DD') : ''
 }
 
 async function fetchReviews() {
@@ -304,16 +339,32 @@ function openBookDialog(room) {
     return
   }
   currentRoom.value = room
+  orderForm.roomCount = 1
+  orderForm.guestCount = 1
+  // 第一位入住人默认带入当前登录用户信息
+  orderForm.guests = [{
+    name: userStore.userInfo?.nickname || '',
+    phone: userStore.userInfo?.phone || '',
+    idCard: ''
+  }]
   bookVisible.value = true
 }
 
 async function submitOrder() {
-  if (!orderForm.contactName || !orderForm.contactPhone) {
-    return ElMessage.warning('请完善入住信息')
+  // 校验每位入住人的姓名、手机号和身份证
+  for (let i = 0; i < orderForm.guests.length; i++) {
+    const guest = orderForm.guests[i]
+    if (!guest.name || !guest.phone || !guest.idCard) {
+      return ElMessage.warning(`请完善第 ${i + 1} 位入住人的信息（姓名、手机、身份证）`)
+    }
   }
-  
+  if (!orderForm.guests.length) {
+    return ElMessage.warning('请至少填写一位入住人')
+  }
+
   submitting.value = true
   try {
+    const mainContact = orderForm.guests[0]
     const orderData = {
       hotelId: hotel.value.id,
       hotelName: hotel.value.name,
@@ -322,8 +373,9 @@ async function submitOrder() {
       checkIn: dayjs(dateRange.value[0]).format('YYYY-MM-DD'),
       checkOut: dayjs(dateRange.value[1]).format('YYYY-MM-DD'),
       roomCount: orderForm.roomCount,
-      contactName: orderForm.contactName,
-      contactPhone: orderForm.contactPhone,
+      contactName: mainContact.name,
+      contactPhone: mainContact.phone,
+      travelersInfo: JSON.stringify(orderForm.guests),
       totalPrice: totalPrice.value
     }
     
@@ -553,6 +605,36 @@ function handleReviewSuccess() {
       }
     }
   }
+}
+
+.guests-container {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.guest-item {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed #eee;
+
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.guest-header {
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #666;
+  font-size: 14px;
+  background: #f5f7fa;
+  padding: 5px 10px;
+  border-radius: 4px;
 }
 
 .total-bar {

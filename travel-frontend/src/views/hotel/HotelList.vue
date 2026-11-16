@@ -32,7 +32,7 @@
     <div class="hotel-grid" v-loading="loading">
       <div v-for="hotel in hotelList" :key="hotel.id" class="hotel-card" @click="goDetail(hotel.id)">
         <div class="cover">
-          <img :src="hotel.coverImage || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'" :alt="hotel.name" @error="onImgError">
+          <img :src="resolveImage(hotel.coverImage, 'hotel-' + hotel.id)" :alt="hotel.name" @error="onImgError">
         </div>
         <div class="info">
           <div class="header">
@@ -52,7 +52,7 @@
           </div>
           
           <div class="price-box">
-            <el-button type="primary" class="book-btn" @click.stop="handleBook(hotel)">预订酒店</el-button>
+            <el-button type="primary" class="book-btn" @click.stop="goDetail(hotel.id)">查看详情</el-button>
           </div>
         </div>
       </div>
@@ -115,7 +115,7 @@
                  </el-form-item>
                </el-col>
              </el-row>
-             <el-form-item label="身份证" label-width="50px" style="margin-bottom: 0;">
+             <el-form-item label="身份证" label-width="64px" style="margin-bottom: 0;">
                <el-input v-model="guest.idCard" placeholder="身份证号" />
              </el-form-item>
           </div>
@@ -141,6 +141,7 @@ import { getHotelGradeList, createHotelOrder } from '@/api/hotel'
 import { useUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
 import dayjs from 'dayjs'
+import { resolveImage, localPhoto, onImageError as onImgError } from '@/utils/image'
 
 const router = useRouter()
 const route = useRoute()
@@ -174,15 +175,10 @@ watch(() => orderForm.guestCount, (val) => {
 })
 
 const roomTypes = [
-  { id: -1, name: '大床房', price: 188, image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=400&h=300&fit=crop' },
-  { id: -2, name: '双床房', price: 120, image: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400&h=300&fit=crop' },
-  { id: -3, name: '三人房', price: 200, image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=400&h=300&fit=crop' }
+  { id: -1, name: '大床房', price: 188, image: localPhoto('room-big-bed') },
+  { id: -2, name: '双床房', price: 120, image: localPhoto('room-twin') },
+  { id: -3, name: '三人房', price: 200, image: localPhoto('room-triple') }
 ]
-const fallbackImg = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop'
-function onImgError(e) {
-  e.target.src = fallbackImg
-  e.target.onerror = null
-}
 
 const filters = reactive({
   city: '',
