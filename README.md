@@ -401,7 +401,7 @@ shiguang-travel/
 │   └── README.md
 ├── scenic_photos/                  # 1583 张景点实景图
 ├── deploy/nginx.conf               # 手动部署 Nginx 示例
-├── docs/                           # 技术文档、视频脚本、部署指南
+├── docs/                           # 技术文档、部署指南
 ├── scripts/smoke-test.ps1          # 一键冒烟测试
 ├── docker-compose.yml
 ├── .env.example
@@ -462,8 +462,7 @@ docker compose up -d --build
 
 - [`docs/技术文档.pdf`](docs/技术文档.pdf)：项目概述、需求分析、架构、AI 方案、核心实现、测试部署、总结展望（29 页）
 - 演示视频：`Web重生办事处-《拾光旅行》.mp4`（5 分 37 秒，2560×1440，H.264，普通话讲解），连同字幕文件通过大赛官网单独提交，不进入 Git 仓库
-- [`docs/部署指南.md`](docs/部署指南.md)：公网部署与评审账号
-- [`docs/提交材料清单.md`](docs/提交材料清单.md)：对照比赛要求逐项检查
+- [`docs/部署指南.md`](docs/部署指南.md)：Docker Compose / 手动部署、HTTPS 与评审账号
 
 ---
 
